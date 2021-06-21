@@ -1,0 +1,22 @@
+
+02-localTorGateway.sh 			: Create torgateway with one Interface
+04-TwoInterfacesTorGateway.sh   : Create torgateway with two Interfaces
+
+###########
+#### Set localhost as DNS to point to TOR
+###########
+
+sudo apt install resolvconf 
+add "nameserver 127.0.0.1" in /etc/resolvconf/resolv.conf.d/tail
+Ref : ==> https://askubuntu.com/questions/1012641/dns-set-to-systemds-127-0-0-53-how-to-change-permanently
+
+
+##########
+### Specify the DHCP Intefaces
+##########
+/etc/default/isc-dhcp-server
+
+##########
+### DHCP Logs
+##########
+ tail -lf /var/log/syslog | grep dhcpd

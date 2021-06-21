@@ -6,8 +6,9 @@
 ## How to build Tor Gateway on Ubuntu :
 ## 
 ## 0. Configure Ubuntu with two interface and DHCP runing on one of them : https://www.thomaslaurenson.com/blog/2018-07-05/building-an-ubuntu-linux-gateway/
-##  	enp0s3 : External interface (10.0.2.15/24)
-##  	enp0s8 : VPN interface (192.168.100.10/24)
+##  	enp0s3 : Management interface (10.0.2.15/24)
+##  	enp0s8 : Internal network (192.168.100.10/24)
+##		enp0s9 : Bridge network for Wifi Access (192.168.200.10/24)
 ##
 ##		Disable ubuntu DNS :
 ##			sudo systemctl disable systemd-resolved
@@ -35,10 +36,10 @@
 ##			fi
 
 
-## 4. Run this script and persiste iptable
+## 4. Run this script and run iptables-save (they will persisted in /etc/iptables/rules.v4)
 ##		sudo apt-get install iptables-persistent
-##		sudo iptables-persistent save 
-##		
+##		sudo /sbin/iptables-save > /etc/iptables/rules.v4
+##
 ##		sudo systemctl is-enabled netfilter-persistent.service
 ##		sudo systemctl enable netfilter-persistent.service
 ##		
@@ -68,6 +69,7 @@ _tor_uid=`id -u debian-tor`
 /sbin/iptables -t nat -A OUTPUT -p tcp -d 1.1.1.1 --dport 853 -j RETURN
 /sbin/iptables -t nat -A OUTPUT -p tcp -d 1.0.0.1 --dport 853 -j RETURN
 
+#Allow LocalHost 
 /sbin/iptables -A INPUT -j ACCEPT -i lo
 /sbin/iptables -A OUTPUT -j ACCEPT -o lo
 
@@ -84,7 +86,7 @@ _tor_uid=`id -u debian-tor`
 /sbin/iptables -A OUTPUT -j ACCEPT -o enp0s3 -p icmp -m state --state ESTABLISHED
 
 
-#Allow SSH From the Host to the Guest
+#Allow SSH From the Host to the Guest on management interface
 /sbin/iptables -A INPUT -j ACCEPT -i enp0s3 -p tcp -m multiport --dports 22
 /sbin/iptables -A OUTPUT -j ACCEPT -o enp0s3 -d 10.0.0.0/8  -p tcp --sport 22
 
@@ -104,7 +106,7 @@ _tor_uid=`id -u debian-tor`
 #Forward DNS traffic to DNS Port : Nothing needed since TOR DNS is listning on 53
 
 
-#INTERNAL_INTERFACE : Configure the internal inteface : To review
+#INTERNAL_INTERFACE (enp0s8) : Configure the internal inteface 
 /sbin/iptables -t nat -A OUTPUT -o enp0s8 -j RETURN
 /sbin/iptables -t nat -A PREROUTING -i enp0s8 -d 10.0.0.0/8 -j RETURN
 /sbin/iptables -t nat -A PREROUTING -i enp0s8 -d 192.168.0.0/16 -j RETURN
@@ -120,13 +122,36 @@ _tor_uid=`id -u debian-tor`
 
 #Forward traffic to TOR : #sysctl -w net.ipv4.conf.enp0s8.route_localnet=1 ==> This is required to have this working
 /sbin/iptables -A INPUT -j ACCEPT -i enp0s8 -p tcp -m multiport --dports 9090
-iptables -t nat -I PREROUTING  -i enp0s8 -p tcp -j DNAT --to-destination 127.0.0.1:9090
+/sbin/iptables -t nat -I PREROUTING  -i enp0s8 -p tcp -j DNAT --to-destination 127.0.0.1:9090
 
 
 #Forwaord UDP Traffic to localhost 53
 /sbin/iptables -A INPUT -j ACCEPT -i enp0s8 -p udp -m multiport --dports 53
 /sbin/iptables -t nat -I PREROUTING  -i enp0s8 -p udp -j DNAT --to-destination 127.0.0.1:53
 
+
+#BRIDGE_INTERFACE (enp0s9) : Configure the bridge inteface 
+/sbin/iptables -t nat -A OUTPUT -o enp0s9 -j RETURN
+/sbin/iptables -t nat -A PREROUTING -i enp0s9 -d 10.0.0.0/8 -j RETURN
+/sbin/iptables -t nat -A PREROUTING -i enp0s9 -d 192.168.0.0/16 -j RETURN
+/sbin/iptables -t nat -A PREROUTING -i enp0s9  -j RETURN
+
+#Accept input for traffic already established
+/sbin/iptables -A INPUT -j ACCEPT -i enp0s9 -p tcp -m state --state ESTABLISHED
+/sbin/iptables -A INPUT -j ACCEPT -i enp0s9 -p udp -m state --state ESTABLISHED,RELATED
+
+#Accept all output from enp0s9
+/sbin/iptables -A OUTPUT -j ACCEPT -o enp0s9
+
+
+#Forward traffic to TOR : #sysctl -w net.ipv4.conf.enp0s9.route_localnet=1 ==> This is required to have this working
+/sbin/iptables -A INPUT -j ACCEPT -i enp0s9 -p tcp -m multiport --dports 9090
+/sbin/iptables -t nat -I PREROUTING  -i enp0s9 -p tcp -j DNAT --to-destination 127.0.0.1:9090
+
+
+#Forwaord UDP Traffic to localhost 53
+/sbin/iptables -A INPUT -j ACCEPT -i enp0s9 -p udp -m multiport --dports 53
+/sbin/iptables -t nat -I PREROUTING  -i enp0s9 -p udp -j DNAT --to-destination 127.0.0.1:53
 
 
 
