@@ -1,0 +1,8 @@
+#!/bin/sh
+if [ "$IFACE" = enp0s8 ]; then
+	/sbin/sysctl -w net.ipv4.conf.enp0s8.route_localnet=1
+fi
+
+if [ "$IFACE" = enp0s9 ]; then
+	/sbin/sysctl -w net.ipv4.conf.enp0s9.route_localnet=1
+fi
