@@ -14,23 +14,29 @@ echo iptables-persistent iptables-persistent/autosave_v6 boolean true | sudo deb
 sudo apt-get -y install iptables-persistent
 
 echo "Configure Network Interfaces .... "
-sudo cp config/interfaces /etc/network/interfaces
+#sudo cp config/interfaces /etc/network/interfaces
+sudo cp config/01-network-manager-all.yaml /etc/netplan/01-network-manager-all.yaml
+sudo netplan apply
 
 
-echo "Install DHCP server"
-sudo cp config/isc-dhcp-server /etc/default/isc-dhcp-server
-sudo cp config/dhcpd.conf /etc/dhcp/dhcpd.conf
-
-#Enable port forwarding V0
 echo "Enable forwarding"
-cp config/myconf /etc/network/if-up.d/myconf
-sudo chmod +x /etc/network/if-up.d/myconf
-
 #Enable port forwarding
 #echo "Enable forwarding" : Not sure it is necessary
 sudo sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/' /etc/sysctl.conf
 sysctl -p
 sudo sysctl net.ipv4.ip_forward
+
+
+echo "Install DHCP server"
+sudo cp config/isc-dhcp-server /etc/default/isc-dhcp-server
+sudo cp config/dhcpd.conf /etc/dhcp/dhcpd.conf
+sudo service isc-dhcp-server restart
+
+
+
+echo "Enable Local forwarding"
+cp config/myconf /etc/network/if-up.d/myconf
+sudo chmod +x /etc/network/if-up.d/myconf
 
 
 #Disable ubuntu DNS 
@@ -55,9 +61,16 @@ chmod +x 02-EnableTorProxy.sh
 sudo /sbin/iptables-save > /etc/iptables/rules.v4
 cp config/rc.local /etc/rc.local
 
-
-sudo systemctl restart networking
+: <<'END'
+chmod +x ../tools/03-EnableTransparentProxy.sh
+../tools/03-EnableTransparentProxy.sh
+END
+#sudo netplan apply
+#sudo service NetworkManager restart
 sudo service isc-dhcp-server restart
 
 echo "Gateway created succefully"
 
+echo "System will reboot"
+
+reboot

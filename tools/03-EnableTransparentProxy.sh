@@ -19,11 +19,12 @@ echo "Create transparent proxy (Not persisted)"
 
 sudo iptables -A FORWARD -i enp0s8 -o enp0s3 -j ACCEPT
 sudo iptables -A FORWARD -i enp0s3 -o enp0s8 -m state --state ESTABLISHED,RELATED -j ACCEPT
-sudo iptables -t nat -A POSTROUTING -o enp0s3 -j MASQUERADE
+#sudo iptables -t nat -A POSTROUTING -o enp0s3 -j MASQUERADE
 
 
-sudo iptables -A FORWARD -i enp0s8 -o enp0s3 -j ACCEPT
-sudo iptables -A FORWARD -i enp0s3 -o enp0s8 -m state --state ESTABLISHED,RELATED -j ACCEPT
+sudo iptables -A FORWARD -i enp0s9 -o enp0s3 -j ACCEPT
+sudo iptables -A FORWARD -i enp0s3 -o enp0s9 -m state --state ESTABLISHED,RELATED -j ACCEPT
+
 sudo iptables -t nat -A POSTROUTING -o enp0s3 -j MASQUERADE
 
 
@@ -35,8 +36,5 @@ sudo iptables -t nat -A POSTROUTING -o enp0s3 -j MASQUERADE
 #Interface enp0s9
 /sbin/iptables -A INPUT -j ACCEPT -i enp0s9 -p udp -m multiport --dports 53
 /sbin/iptables -t nat -I PREROUTING  -i enp0s9 -p udp -j DNAT --to-destination 127.0.0.1:53
-
-
-
 
 

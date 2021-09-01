@@ -7,3 +7,11 @@
 2- Script to send traffic to TOR
 
 *** Buid : contain a script that will allow to create a gatway with two interfaces
+
+
+
+*** Debug
+Note : TOR Circuit took time to be opened (~5mn)
+sudo service tor status
+sudo service isc-dhcp-server status
+sudo tail -lf /var/log/syslog | grep -i dhcp
