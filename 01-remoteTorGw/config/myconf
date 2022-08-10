@@ -1,0 +1,4 @@
+#!/bin/sh
+if [ "$IFACE" = wg0 ]; then
+	/sbin/sysctl -w net.ipv4.conf.wg0.route_localnet=1
+fi
