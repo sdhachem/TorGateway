@@ -24,28 +24,40 @@ echo "127.0.0.1 $hostName">>"/etc/hosts"
 #Instal tor
 echo "Configure TOR "
 sudo cp config/torrc /etc/tor/torrc
+sudo service tor restart
 
 # Enable local forward on wg0
-echo "Enable Local forwarding"
-cp  config/myconf /etc/network/if-up.d/myconf
-sudo chmod +x /etc/network/if-up.d/myconf
-/sbin/sysctl -w net.ipv4.conf.wg0.route_localnet=1
+#echo "Enable Local forwarding"
+#cp  config/myconf /etc/network/if-up.d/myconf
+#sudo chmod +x /etc/network/if-up.d/myconf
+#/sbin/sysctl -w net.ipv4.conf.wg0.route_localnet=1
 
 
 ##### Stage 2 : Iptables
 echo "Stage 2 : Iptables "
 
 chmod +x enableTorGw.sh
+rm -rf /root/enableTorGw.sh 
 sudo cp enableTorGw.sh /root/
 
 chmod +x disableTorGw.sh
+rm -rf /root/disableTorGw.sh
 sudo cp disableTorGw.sh /root/
+
+
+#install service
+#sudo cp config/enableTorOnStart.service /etc/systemd/system/enableTorOnStart.service
+#sudo systemctl enable enableTorOnStart
+#sudo service enableTorOnStart restart
+
 
 echo "Step 2 : Start installing WireGuard ==> $PRIVATE_SERVER_SUBNET"
 PRIVATE_SERVER_SUBNET=$1 
 
 
 #Remove the config File if it exists (reinstall)
+sudo systemctl stop wg-quick@wg0
+
 sudo wg-quick down wg0  2> /dev/null
 sudo rm -rf $ServerConfFile 2> /dev/null
 sudo rm -rf /etc/wireguard/keys 2> /dev/null
@@ -69,8 +81,8 @@ echo "[Interface]" >> $ServerConfFile
 echo "Address = $PRIVATE_SERVER_SUBNET" >> $ServerConfFile
 echo "ListenPort = $VPN_PORT" >> $ServerConfFile
 echo "PrivateKey = $SERVER_PRIVATE_KEY" >> $ServerConfFile
-echo "PostUp = /root/enableTorGw.sh "  >> $ServerConfFile
-echo "PostDown = /root/disableTorGw.sh"  >> $ServerConfFile
+#echo "PostUp = /root/enableTorGw.sh "  >> $ServerConfFile
+#echo "PostDown = /root/disableTorGw.sh"  >> $ServerConfFile
 echo "SaveConfig = true" >> $ServerConfFile
 
 sudo /usr/bin/chmod 600 /etc/wireguard/wg0.conf /etc/wireguard/keys/server.key
@@ -93,6 +105,7 @@ sudo sysctl -p
 ResultForwardinCmd=`sysctl net.ipv4.ip_forward` 
 echo "End enable forwarding : $ResultForwardinCmd"
 
+sudo systemctl restart wg-quick@wg0
 
 
 

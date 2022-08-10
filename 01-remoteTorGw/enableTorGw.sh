@@ -1,6 +1,15 @@
 #!/bin/sh
 
+# stop local dns
+sudo systemctl stop systemd-resolved	
+#restart tor
 sudo service tor restart
+
+
+# Enable local forward on wg0
+echo "Enable Local forwarding"
+/sbin/sysctl -w net.ipv4.conf.wg0.route_localnet=1
+
 
 DEFAULT_INTERFACE=`/usr/bin/ip -o -4 route show to default | /usr/bin/awk '{print $5}'` 
 
@@ -96,5 +105,5 @@ _tor_uid=`id -u debian-tor`
 #sudo /sbin/iptables-save > /etc/iptables/tor.v4
 #cp config/rc.local /etc/rc.local
 
-echo "End stage 2 "
+echo "End enableTorGw "
 
