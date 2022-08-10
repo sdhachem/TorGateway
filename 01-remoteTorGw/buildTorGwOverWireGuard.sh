@@ -82,7 +82,7 @@ echo "Address = $PRIVATE_SERVER_SUBNET" >> $ServerConfFile
 echo "ListenPort = $VPN_PORT" >> $ServerConfFile
 echo "PrivateKey = $SERVER_PRIVATE_KEY" >> $ServerConfFile
 #echo "PostUp = /root/enableTorGw.sh "  >> $ServerConfFile
-#echo "PostDown = /root/disableTorGw.sh"  >> $ServerConfFile
+#echo "PostDown = /root/enableTorGw.sh"  >> $ServerConfFile
 echo "SaveConfig = true" >> $ServerConfFile
 
 sudo /usr/bin/chmod 600 /etc/wireguard/wg0.conf /etc/wireguard/keys/server.key

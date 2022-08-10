@@ -2,9 +2,6 @@
 
 # stop local dns
 sudo systemctl stop systemd-resolved	
-#restart tor
-sudo service tor restart
-
 
 # Enable local forward on wg0
 echo "Enable Local forwarding"
@@ -14,15 +11,20 @@ echo "Enable Local forwarding"
 DEFAULT_INTERFACE=`/usr/bin/ip -o -4 route show to default | /usr/bin/awk '{print $5}'` 
 
 _tor_uid=`id -u debian-tor`
+sudo service tor restart
 
 #Cleaning
-/sbin/iptables -F
-/sbin/iptables -t nat -F
-/sbin/iptables -t mangle -F
-/sbin/iptables -X
-/sbin/iptables -P INPUT DROP
-/sbin/iptables -P OUTPUT DROP
-/sbin/iptables -P FORWARD DROP
+
+sudo iptables -P INPUT ACCEPT
+sudo iptables -P FORWARD ACCEPT
+sudo iptables -P OUTPUT ACCEPT
+
+sudo iptables -t nat -F
+sudo iptables -t mangle -F
+sudo iptables -F
+sudo iptables -X
+
+/sbin/iptables-restore < /etc/iptables/rules.v4
 
 
 /sbin/iptables -A INPUT -p icmp --icmp-type echo-request -m limit --limit 10/s -j ACCEPT
@@ -34,6 +36,7 @@ _tor_uid=`id -u debian-tor`
 /sbin/iptables -t nat -A OUTPUT -d 10.0.0.0/8 -j RETURN
 /sbin/iptables -t nat -A OUTPUT -p tcp -d 1.1.1.1 --dport 853 -j RETURN
 /sbin/iptables -t nat -A OUTPUT -p tcp -d 1.0.0.1 --dport 853 -j RETURN
+
 
 #Allow LocalHost 
 /sbin/iptables -A INPUT -j ACCEPT -i lo
