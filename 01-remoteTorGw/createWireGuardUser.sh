@@ -51,9 +51,9 @@ echo "AllowedIPs = 0.0.0.0/0" >> $ClientConfFile
 echo "Endpoint = $SERVER_WAN_IP:$VPN_PORT" >> $ClientConfFile
 
 
-#echo "STEP 3 : Generate QR Code"
-#qrCodeFile="/etc/wireguard/clients/$1.png"
-#qrencode -t ansiutf8  -o $qrCodeFile -l H -v 2 <  $ClientConfFile
+echo "STEP 3 : Generate QR Code"
+qrCodeFile="/etc/wireguard/clients/$1.png"
+qrencode -t ansiutf8  -o $qrCodeFile -l H -v 2 <  $ClientConfFile
  
 echo "STEP 3 : add the client to the server"
 sudo wg set wg0 peer $CLIENT_PUBLIC_KEY allowed-ips $2

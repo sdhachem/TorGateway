@@ -1,0 +1,22 @@
+
+1- Install Desktop 
+
+sudo apt install ubuntu-desktop
+// or 
+* install ubuntu desktop or ubuntu minimal desktop using tasksel
+sudo apt update
+sudo apt install tasksel
+sudo tasksel
+
+
+2- Install team viewer on ubuntu
+
+https://vitux.com/how-to-install-teamviewer-on-ubuntu/
+
+3- Get the TeamViewer ID 
+teamviewer -info
+
+4- Set the TeamViewer password
+teamviewer --passwd [password]
+
+5- restart and connect

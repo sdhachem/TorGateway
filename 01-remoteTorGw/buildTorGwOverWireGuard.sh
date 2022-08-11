@@ -14,11 +14,13 @@ sudo apt-get -y install tor
 
 #Disable ubuntu DNS 
 echo "Disable ubuntu DNS "
+hostName=`hostname` 
+
 sudo systemctl disable systemd-resolved
 sudo systemctl stop systemd-resolved	
 rm -rf /etc/resolv.conf
 
-hostName=`hostname` 
+
 echo "127.0.0.1 $hostName">>"/etc/hosts"
 
 #Instal tor
@@ -56,14 +58,15 @@ PRIVATE_SERVER_SUBNET=$1
 
 
 #Remove the config File if it exists (reinstall)
-sudo systemctl stop wg-quick@wg0
 
 sudo wg-quick down wg0  2> /dev/null
+sudo systemctl stop wg-quick@wg0
+
 sudo rm -rf $ServerConfFile 2> /dev/null
 sudo rm -rf /etc/wireguard/keys 2> /dev/null
 
 sudo apt-get -y  install wireguard
-
+sudo apt-get -y  install qrencode
 
 currentUser=`whoami` 
 sudo chown -R $currentUser:$currentUser /etc/wireguard
@@ -81,8 +84,8 @@ echo "[Interface]" >> $ServerConfFile
 echo "Address = $PRIVATE_SERVER_SUBNET" >> $ServerConfFile
 echo "ListenPort = $VPN_PORT" >> $ServerConfFile
 echo "PrivateKey = $SERVER_PRIVATE_KEY" >> $ServerConfFile
-#echo "PostUp = /root/enableTorGw.sh "  >> $ServerConfFile
-#echo "PostDown = /root/enableTorGw.sh"  >> $ServerConfFile
+echo "PostUp = /root/enableTorGw.sh "  >> $ServerConfFile
+echo "PostDown = /root/enableTorGw.sh"  >> $ServerConfFile
 echo "SaveConfig = true" >> $ServerConfFile
 
 sudo /usr/bin/chmod 600 /etc/wireguard/wg0.conf /etc/wireguard/keys/server.key
@@ -105,7 +108,11 @@ sudo sysctl -p
 ResultForwardinCmd=`sysctl net.ipv4.ip_forward` 
 echo "End enable forwarding : $ResultForwardinCmd"
 
+
+sudo wg-quick down wg0  2> /dev/null
 sudo systemctl restart wg-quick@wg0
 
+sudo systemctl status wg-quick@wg0
+sudo wg show wg0
 
 
