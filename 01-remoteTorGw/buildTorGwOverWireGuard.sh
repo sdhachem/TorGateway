@@ -2,10 +2,10 @@
 
 VPN_PORT="443"
 ServerConfFile="/etc/wireguard/wg0.conf"
-PRIVATE_SERVER_SUBNET="10.300.0.1"
+PRIVATE_SERVER_SUBNET="10.300.0.1/24"
 
 echo "Step 1 : Install tor and prepare the tunnel Wirguard ==> Tor"
-sudo apt update && sudo apt upgrade
+sudo apt-get -y update && sudo apt-get -y upgrade
 
 if [ -f /var/run/reboot-required ]; then
   echo 'reboot required : Run the script a'
