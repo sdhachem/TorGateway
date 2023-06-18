@@ -8,7 +8,7 @@ then
 fi
 if [ -z $2 ]
 then
- echo "./addNewVpnClient   ClientName CLIENT_VPN_IP (in this subnet 10.300.0.1/24) SERVER_IP"
+ echo "./addNewVpnClient   ClientName CLIENT_VPN_IP (in this subnet 10.200.0.1/24) SERVER_IP"
  exit
 fi
 if [ -z $3 ]
