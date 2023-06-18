@@ -53,5 +53,6 @@ qrencode -t ansiutf8  -o $qrCodeFile -l H -v 2 <  $ClientConfFile
 echo "STEP 3 : add the client to the server"
 sudo wg set wg0 peer $CLIENT_PUBLIC_KEY allowed-ips 10.300.0.1
 
-echo "End adding the client $1"
+echo "End adding the client $1 : Fetch the config file from $ClientConfFile"
+
 
