@@ -59,4 +59,5 @@ echo "STEP 3 : add the client to the server"
 sudo wg set wg0 peer $CLIENT_PUBLIC_KEY allowed-ips $2
 
 echo "End adding the client $1"
+echo "Fetch New Client IP in $ClientConfFil"
 
