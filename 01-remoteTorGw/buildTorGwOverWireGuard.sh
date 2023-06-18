@@ -5,7 +5,8 @@ PRIVATE_SERVER_SUBNET="10.300.0.1"
 
 echo "Step 1 : Install tor and prepare the tunnel Wirguard ==> Tor"
 sudo apt-get -y install tor
-
+sudo apt-get -y  install wireguard
+sudo apt-get -y  install qrencode
 
 #Disable ubuntu DNS 
 echo "Disable ubuntu DNS "
@@ -59,9 +60,6 @@ sudo systemctl stop wg-quick@wg0
 
 sudo rm -rf $ServerConfFile 2> /dev/null
 sudo rm -rf /etc/wireguard/keys 2> /dev/null
-
-sudo apt-get -y  install wireguard
-sudo apt-get -y  install qrencode
 
 currentUser=`whoami` 
 sudo chown -R $currentUser:$currentUser /etc/wireguard
