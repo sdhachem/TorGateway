@@ -1,12 +1,7 @@
 #!/bin/sh
 VPN_PORT="443"
 ServerConfFile="/etc/wireguard/wg0.conf"
-
-if [ -z $1 ]
-then
- echo "./installWireGuard PRIVATE_SERVER_SUBNET (10.10.10.10/24)"
- exit
-fi
+PRIVATE_SERVER_SUBNET="10.300.0.1"
 
 echo "Step 1 : Install tor and prepare the tunnel Wirguard ==> Tor"
 sudo apt-get -y install tor
@@ -54,7 +49,7 @@ sudo cp disableTorGw.sh /root/
 
 
 echo "Step 2 : Start installing WireGuard ==> $PRIVATE_SERVER_SUBNET"
-PRIVATE_SERVER_SUBNET=$1 
+
 
 
 #Remove the config File if it exists (reinstall)
