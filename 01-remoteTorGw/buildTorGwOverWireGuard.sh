@@ -1,9 +1,18 @@
-#!/bin/sh
+#!/bin/bash
+
 VPN_PORT="443"
 ServerConfFile="/etc/wireguard/wg0.conf"
 PRIVATE_SERVER_SUBNET="10.300.0.1"
 
 echo "Step 1 : Install tor and prepare the tunnel Wirguard ==> Tor"
+sudo apt update && sudo apt upgrade
+
+if [ -f /var/run/reboot-required ]; then
+  echo 'reboot required : Run the script a'
+  reboot now
+  exit
+fi
+
 sudo apt-get -y install tor
 sudo apt-get -y  install wireguard
 sudo apt-get -y  install qrencode
