@@ -27,11 +27,11 @@ echo "Configure TOR "
 cp /opt/tor/release/config/torrc /etc/tor/torrc
 sudo service tor restart
 
-cp /opt/tor/release/HowToConnectToWifi.txt /home/live/Desktop/
+cp /opt/tor/release/HowToConnectToWifi.txt /home/live/
 
 echo "Persist iptables rules on interface up"
-cp  /opt/tor/release/enableTorGw.sh  /etc/network/if-up.d/enableTorGw.sh
-chmod a+x /etc/network/if-up.d/enableTorGw.sh
+cp  /opt/tor/release/enableTorGw.sh  /etc/network/if-up.d/tor
+chmod a+x /etc/network/if-up.d/tor
 
 echo "Enable Local forwarding"
 DEFAULT_INTERFACE=`/usr/bin/ip -o -4 route show to default | /usr/bin/awk '{print $5}'` 
