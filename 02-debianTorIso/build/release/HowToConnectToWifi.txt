@@ -1,0 +1,4 @@
+ 
+nmcli radio wifi on
+nmcli dev wifi list
+sudo nmcli dev wifi connect network-ssid password "network-password"

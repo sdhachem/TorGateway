@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+export LANG=C.UTF-8
+
+echo 'Configure Tor'
+WFOLDER='/opt/tor'
+WINSTALL="$WFOLDER/release/configure_tor.sh"
+chmod +x ${WINSTALL}
+${WINSTALL} 
+
