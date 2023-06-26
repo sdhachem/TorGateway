@@ -2,7 +2,17 @@ if [ $# -eq 1 ]
 then
         IMAGE_NAME=$1
 else
-        echo "./createLive IMAGE_NAME"
+        echo "Specify a name ... ..."
+        echo "./createLive IMAGE_NAME ARCH_NAME"
+        exit
+fi
+
+if [ $# -eq 2 ]
+then
+        ARCH_NAME=$1
+else
+        echo "Specify an architecture ... ..."
+        echo "./createLive IMAGE_NAME ARCH_NAME"
         exit
 fi
 
@@ -24,6 +34,7 @@ sudo lb config noauto \
     --archive-areas "main contrib non-free" \
     --apt-indices false \
     --memtest none \
+    --architecture $ARCH_NAME
     --bootappend-live "boot=live swap config username=live "\
     "${@}"
 
